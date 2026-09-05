@@ -1,3 +1,3 @@
-from database.insert_into_table import insert
+from api.fetch_news import fetch_todays_news
 
-insert()
+fetch_todays_news()
