@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from datetime import timedelta, date
+from datetime import date
 from api.api_client import get_news
 from utils.logger import get_logger
 
@@ -9,25 +9,19 @@ RAW_DATA_DIR = Path("data/api/raw")
 logger = get_logger(__name__)
 
 def fetch_todays_news():
-    download_date = date.today()
+    download_date = date.today().isoformat()
+    logger.info(f"Fetching Todays News download date : {download_date}")
 
-    news_date = download_date - timedelta(days=1)
-
-    downlaod = download_date.isoformat()
-    news = news_date.isoformat()
-    logger.info(f"Fetching Todays News download date : {downlaod} with news date : {news}")
-
-    file_path = RAW_DATA_DIR / f"{downlaod}.json"
+    file_path = RAW_DATA_DIR / f"{download_date}.json"
     if file_path.exists():
         logger.info("Today's file already exists so skipping download")
         return
     logger.info("Fetching news from api")
     
-    news_data = get_news(news, news)
+    news_data = get_news()
 
     output_data = {
-        "download_date" : downlaod,
-        "news_date" : news,
+        "download_date" : download_date,
         "source" : "API",
         "data" : news_data
     }
