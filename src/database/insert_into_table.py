@@ -1,9 +1,13 @@
+import os
 import json
 
+from dotenv import load_dotenv
 from database.db_connection import get_connection
 from utils.logger import get_logger
 
-FILE_PATH = "data/dataset/raw/news_dataset.json"
+load_dotenv()
+
+FILE_PATH = str(os.getenv("RAW_DATASET_FILE_PATH"))
 logger = get_logger(__name__, "database")
 
 def insert(table:str = "news_dataset"):

@@ -1,10 +1,15 @@
 import json
+import os
+
+from dotenv import load_dotenv
 from pathlib import Path
 from datetime import date
 from api.api_client import get_news
 from utils.logger import get_logger
 
-RAW_DATA_DIR = Path("data/api/raw")
+load_dotenv()
+
+RAW_DATA_DIR = Path(str(os.getenv("RAW_API_DATA_DIR")))
 
 logger = get_logger(__name__)
 
