@@ -1,3 +1,3 @@
-from ingestion.bronze_ingest_database import broze_ingest_database
+from api.fetch_news import fetch_todays_news
 
-broze_ingest_database("news_dataset")
+fetch_todays_news("2026-09-24")

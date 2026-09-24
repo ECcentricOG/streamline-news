@@ -13,8 +13,7 @@ RAW_DATA_DIR = Path(str(os.getenv("RAW_API_DATA_DIR")))
 
 logger = get_logger(__name__)
 
-def fetch_todays_news():
-    download_date = date.today().isoformat()
+def fetch_todays_news(download_date:str):
     logger.info(f"Fetching Todays News download date : {download_date}")
 
     file_path = RAW_DATA_DIR / f"{download_date}.json"
