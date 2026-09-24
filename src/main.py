@@ -10,5 +10,8 @@ load_dotenv()
 spark = get_session(__name__)
 logger = get_logger(__name__)
 
-read_df = spark.read.schema(news_article_schema).parquet(str(os.getenv("BRONZE_API_DIR")))
+read_df = spark.read\
+.schema(news_article_schema)\
+.option("recursiveFileLookup", "true")\
+.parquet(str(os.getenv("BRONZE_API_DIR")))
 logger.info(read_df.count())
