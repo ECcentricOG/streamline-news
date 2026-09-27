@@ -3,7 +3,6 @@ import os
 
 from dotenv import load_dotenv
 from pathlib import Path
-from datetime import date
 from api.api_client import get_news
 from utils.logger import get_logger
 

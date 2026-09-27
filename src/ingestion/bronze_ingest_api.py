@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from utils.spark_session import get_session
+from pyspark.sql import SparkSession
 from utils.logger import get_logger
 from schema.news_api_schema import news_schema
 from pyspark.sql.functions import explode
@@ -10,8 +10,7 @@ load_dotenv()
 
 logger = get_logger(__name__)
 
-def bronze_ingest_api(download_date:str):
-    spark = get_session(__name__)
+def bronze_ingest_api(spark:SparkSession, download_date:str):
     try:
         logger.info("Reading latest API data")
         raw_file = f"{os.getenv('RAW_API_DATA_DIR')}/{download_date}.json"
@@ -22,7 +21,11 @@ def bronze_ingest_api(download_date:str):
             return 
 
         news_df = spark.read.schema(news_schema).option("multiline", True).json(raw_file)
+
+        logger.info("Getting only articles from data from all API data")
+
         news_article_df = news_df.select(explode("data.articles").alias("article"))
+
         article_df = news_article_df.select(
             "article.source.name", 
             "article.author", 
@@ -39,7 +42,6 @@ def bronze_ingest_api(download_date:str):
 
 
     except Exception as e:
-        logger.info(e)
-    finally:
         spark.stop()
         logger.info("Spark session is now stopped")
+        logger.info(e)
