@@ -1,4 +1,4 @@
-from pyspark.sql.types import StringType, StructField, StructType
+from pyspark.sql.types import DateType, StringType, StructField, StructType
 
 news_bronze_schema = StructType([
     StructField("name", StringType(), nullable=True),
@@ -8,6 +8,6 @@ news_bronze_schema = StructType([
     StructField("url", StringType(), nullable=True),
     StructField("urlToImage", StringType(), nullable=True),
     StructField("category", StringType(), nullable=True),
-    StructField("publishedAt", StringType(), nullable=True),
+    StructField("publishedAt", DateType(), nullable=True),
     StructField("content", StringType(), nullable=True)
 ])
