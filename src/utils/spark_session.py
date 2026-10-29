@@ -15,3 +15,14 @@ def get_session(name="Default"):
         .config("spark.jars.packages", "org.postgresql:postgresql:42.7.3")\
         .getOrCreate()
     
+
+class SparkSessionFactory:
+
+    @staticmethod
+    def create(app_name="Default"):
+        return SparkSession.builder\
+            .appName(app_name)\
+            .master("local[*]")\
+            .config("spark.sql.adaptive.enable", "true")\
+            .config("spark.jars.packages", "org.postgresql:postgresql:42.7.3")\
+            .getOrCreate()
