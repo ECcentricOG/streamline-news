@@ -3,6 +3,8 @@ import os
 from dotenv import load_dotenv
 from ingestion.bronze_daily_merge import bronze_daily_merge
 from ingestion.bronze_ingest_api import bronze_ingest_api
+from analysis.gold_fact_bussiness_news import gold_fact_business
+from analysis.gold_daily_fact_business import gold_daily_fact_business
 from transformation.silver_daily_transformation import silver_daily_transformation
 from transformation.silver_daily_ingest import silver_daily_ingest
 from utils.logger import get_logger
@@ -24,5 +26,12 @@ logger = get_logger(__name__)
 #silver_daily_ingest(spark, download_date)
 #silver_daily_transformation(spark, download_date)
 
-df = read_df(spark, f"{os.getenv('SILVER_TRANSFORM_DIR')}")
-df.filter(df["name"] != "Unknown").filter(df['image'] != "Unknown").show(50)
+#df = read_df(spark, f"{os.getenv('SILVER_TRANSFORM_DIR')}")
+#df.filter(df["name"] != "Unknown").filter(df['image'] != "Unknown").show(50)
+
+#gold_fact_business(spark)
+gold_daily_fact_business(spark, download_date)
+
+df = read_df(spark, f"{os.getenv('GOLD_FACT_BUSINESS_DIR')}")
+df.show(40)
+print(df.count())

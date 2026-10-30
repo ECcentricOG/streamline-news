@@ -2,19 +2,17 @@ import os
 
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
-from schema.news_silver_schema import news_silver_schema
 from utils.logger import get_logger
-from pyspark.sql.functions import col, concat_ws, isnotnull, lower, month, to_date, when, year
+from pyspark.sql.functions import col, concat_ws, lower, month, to_date, when, year
 
 load_dotenv()
 
 logger = get_logger(__name__)
 
-def fact_business_news(spark:SparkSession):
+def gold_fact_business(spark:SparkSession):
     try:
         silver_df = spark.read\
                     .option("recursiveFileLookup", True)\
-                    .schema(news_silver_schema)\
                     .parquet(f"{os.getenv('SILVER_TRANSFORM_DIR')}")
 
         silver_df = silver_df.withColumn(
@@ -123,6 +121,8 @@ def fact_business_news(spark:SparkSession):
         ]
 
         business_df = business_df.select(*columns)
+
+        business_df.write.parquet(f"{os.getenv('GOLD_FACT_BUSINESS_DIR')}/main", mode="ignore")
 
     except Exception as e:
         spark.stop()
