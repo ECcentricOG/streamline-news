@@ -5,6 +5,7 @@ from ingestion.bronze_daily_merge import bronze_daily_merge
 from ingestion.bronze_ingest_api import bronze_ingest_api
 from analysis.gold_fact_bussiness_news import gold_fact_business
 from analysis.gold_daily_fact_business import gold_daily_fact_business
+from transformation.silver_ingestion import silver_ingest_data
 from transformation.silver_daily_transformation import silver_daily_transformation
 from transformation.silver_daily_ingest import silver_daily_ingest
 from utils.logger import get_logger
@@ -34,4 +35,13 @@ gold_daily_fact_business(spark, download_date)
 
 df = read_df(spark, f"{os.getenv('GOLD_FACT_BUSINESS_DIR')}")
 df.show(40)
-print(df.count())
+print("GOLD", df.count())
+
+bronze_df = read_df(spark, f"{os.getenv('BRONZE_MERGE_DIR')}")
+print("Bronze Merge",bronze_df.count())
+
+silver_ingest_df = read_df(spark, f"{os.getenv('SILVER_INGEST_DIR')}")
+print("Silver Ingest", silver_ingest_df.count())
+
+silver_df = read_df(spark, f"{os.getenv('SILVER_TRANSFORM_DIR')}")
+print("Silver Transform", silver_df.count())
