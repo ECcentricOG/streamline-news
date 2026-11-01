@@ -1,18 +1,13 @@
 import os
 
 from dotenv import load_dotenv
-from ingestion.bronze_daily_merge import bronze_daily_merge
-from ingestion.bronze_ingest_api import bronze_ingest_api
-from analysis.gold_fact_bussiness_news import gold_fact_business
 from analysis.gold_daily_fact_business import gold_daily_fact_business
-from transformation.silver_ingestion import silver_ingest_data
-from transformation.silver_daily_transformation import silver_daily_transformation
-from transformation.silver_daily_ingest import silver_daily_ingest
+from analysis.gold_daily_fact_sport import gold_daily_fact_sport
+from analysis.gold_daily_fact_technology import gold_daily_fact_technology
+from analysis.gold_dialy_fact_health import gold_daily_fact_health
 from utils.logger import get_logger
 from utils.spark_session import get_session
 from utils.read_df import read_df
-from api.fetch_news import fetch_todays_news
-
 
 download_date = "2026-10-15"
 
@@ -21,27 +16,21 @@ load_dotenv()
 spark = get_session(__name__)
 logger = get_logger(__name__)
 
-#fetch_todays_news(download_date)
-#bronze_ingest_api(spark, download_date)
-#bronze_daily_merge(spark, download_date)
-#silver_daily_ingest(spark, download_date)
-#silver_daily_transformation(spark, download_date)
 
-#df = read_df(spark, f"{os.getenv('SILVER_TRANSFORM_DIR')}")
-#df.filter(df["name"] != "Unknown").filter(df['image'] != "Unknown").show(50)
-
-#gold_fact_business(spark)
 gold_daily_fact_business(spark, download_date)
+gold_daily_fact_technology(spark, download_date)
+gold_daily_fact_sport(spark, download_date)
+gold_daily_fact_health(spark, download_date)
 
 df = read_df(spark, f"{os.getenv('GOLD_FACT_BUSINESS_DIR')}")
 df.show(40)
-print("GOLD", df.count())
-
-bronze_df = read_df(spark, f"{os.getenv('BRONZE_MERGE_DIR')}")
-print("Bronze Merge",bronze_df.count())
-
-silver_ingest_df = read_df(spark, f"{os.getenv('SILVER_INGEST_DIR')}")
-print("Silver Ingest", silver_ingest_df.count())
-
-silver_df = read_df(spark, f"{os.getenv('SILVER_TRANSFORM_DIR')}")
-print("Silver Transform", silver_df.count())
+print("BUSINESS", df.count())
+df = read_df(spark, f"{os.getenv('GOLD_FACT_TECH_DIR')}")
+df.show(40)
+print("TECH", df.count())
+df = read_df(spark, f"{os.getenv('GOLD_FACT_SPORT_DIR')}")
+df.show(40)
+print("SPORT", df.count())
+df = read_df(spark, f"{os.getenv('GOLD_FACT_HEALTH_DIR')}")
+df.show(40)
+print("HEALTH", df.count())
