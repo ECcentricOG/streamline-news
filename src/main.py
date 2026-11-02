@@ -5,15 +5,15 @@ from analysis.gold_daily_fact_business import gold_daily_fact_business
 from analysis.gold_daily_fact_sport import gold_daily_fact_sport
 from analysis.gold_daily_fact_technology import gold_daily_fact_technology
 from analysis.gold_dialy_fact_health import gold_daily_fact_health
+from utils.spark_sesssion_factory import SparkSessionFactory
 from utils.logger import get_logger
-from utils.spark_session import get_session
 from utils.read_df import read_df
 
 download_date = "2026-10-15"
 
 load_dotenv()
 
-spark = get_session(__name__)
+spark = SparkSessionFactory.create("Streamline_News")
 logger = get_logger(__name__)
 
 
