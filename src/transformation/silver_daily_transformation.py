@@ -1,22 +1,20 @@
 import os
 
 from pyspark.sql import SparkSession
+from utils.app_config import AppConfig
 from utils.logger import get_logger
-from dotenv import load_dotenv
 from pyspark.sql.functions import lit, col, trim, when
 from utils.unique_article_id import get_unique_id
 from schema.news_bronze_schema import news_bronze_schema
 
-load_dotenv()
-
 logger = get_logger(__name__)
 
-def silver_daily_transformation(spark:SparkSession, download_date:str):
+def silver_daily_transformation(config:AppConfig, spark:SparkSession, download_date:str):
     try:
         news_df = spark.read.schema(news_bronze_schema)\
-                    .parquet(f"{os.getenv('SILVER_INGEST_DIR')}/{download_date}")
+                    .parquet(f"{config.SILVER_INGEST_DIR}/{download_date}")
 
-        if os.path.exists(f"{os.getenv('SILVER_TRANSFORM_DIR')}/{download_date}"):
+        if os.path.exists(f"{config.SILVER_TRANSFORM_DIR}/{download_date}"):
             return
 
         news_df = get_unique_id(news_df)
@@ -36,7 +34,7 @@ def silver_daily_transformation(spark:SparkSession, download_date:str):
                     ).otherwise(cleaned)
                 )
 
-        news_df.write.parquet(f"{os.getenv('SILVER_TRANSFORM_DIR')}/{download_date}", mode="ignore")
+        news_df.write.parquet(f"{config.SILVER_TRANSFORM_DIR}/{download_date}", mode="ignore")
 
     except Exception as e: 
         logger.info(e)

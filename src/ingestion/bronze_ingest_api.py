@@ -1,20 +1,18 @@
 import os
 
-from dotenv import load_dotenv
 from pyspark.sql import SparkSession
+from utils.app_config import AppConfig
 from utils.logger import get_logger
 from schema.news_api_schema import news_schema
 from pyspark.sql.functions import explode
 
-load_dotenv()
-
 logger = get_logger(__name__)
 
-def bronze_ingest_api(spark:SparkSession, download_date:str):
+def bronze_ingest_api(config:AppConfig, spark:SparkSession, download_date:str):
     try:
         logger.info("Reading latest API data")
-        raw_file = f"{os.getenv('RAW_API_DATA_DIR')}/{download_date}.json"
-        bronze_path = f"{os.getenv('BRONZE_API_DIR')}/{download_date}"
+        raw_file = f"{config.RAW_API_DATA_DIR}/{download_date}.json"
+        bronze_path = f"{config.BRONZE_API_DIR}/{download_date}"
 
         if os.path.exists(bronze_path):
             logger.info(f"Data for {download_date} already exists. Skipping.")
@@ -38,7 +36,7 @@ def bronze_ingest_api(spark:SparkSession, download_date:str):
         )
         logger.info("Sucessfully read the API data")
         article_df.write.parquet(bronze_path, mode="append")
-        logger.info(f"API data is successfully written {os.getenv('BRONZE_API_DIR')}")
+        logger.info(f"API data is successfully written {config.BRONZE_API_DIR}")
 
 
     except Exception as e:

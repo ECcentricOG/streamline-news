@@ -1,22 +1,20 @@
 import os
 
-from dotenv import load_dotenv
 from pyspark.sql import SparkSession
+from utils.app_config import AppConfig
 from utils.logger import get_logger
 from pyspark.sql.functions import col, concat_ws, lower, month, to_date, when, year
 
-load_dotenv()
-
 logger = get_logger(__name__)
 
-def gold_daily_fact_technology(spark:SparkSession, downlaod_date:str):
+def gold_daily_fact_technology(config:AppConfig, spark:SparkSession, downlaod_date:str):
     try:
-        if os.path.exists(f"{os.getenv('GOLD_FACT_TECH_DIR')}/{downlaod_date}"):
+        if os.path.exists(f"{config.GOLD_FACT_TECH_DIR}/{downlaod_date}"):
             logger.info("Data is already there so skipping")
             return 
 
         silver_df = spark.read\
-                    .parquet(f"{os.getenv('SILVER_TRANSFORM_DIR')}/{downlaod_date}")
+                    .parquet(f"{config.SILVER_TRANSFORM_DIR}/{downlaod_date}")
 
         silver_df = silver_df.withColumn(
             "search_text",
@@ -127,7 +125,8 @@ def gold_daily_fact_technology(spark:SparkSession, downlaod_date:str):
 
         business_df = business_df.select(*columns)
 
-        business_df.write.parquet(f"{os.getenv('GOLD_FACT_TECH_DIR')}/{downlaod_date}", mode="ignore")
+        business_df.write.parquet(f"{config.GOLD_FACT_TECH_DIR}/{downlaod_date}", mode="ignore")
+        logger.info("Tech daily data is written")
 
     except Exception as e:
         spark.stop()

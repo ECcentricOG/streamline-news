@@ -11,6 +11,7 @@ class AppConfig:
     DB_NAME = os.getenv('DB_NAME')
     
     API_KEY = os.getenv('API_KEY')
+    BASE_URL = os.getenv('BASE_URL')
     
     RAW_DATASET_FILE_PATH = os.getenv('RAW_DATASET_FILE_PATH')
     RAW_API_DATA_DIR = os.getenv('RAW_API_DATA_DIR')

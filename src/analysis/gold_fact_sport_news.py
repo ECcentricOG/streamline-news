@@ -1,19 +1,15 @@
-import os
-
-from dotenv import load_dotenv
 from pyspark.sql import SparkSession
+from utils.app_config import AppConfig
 from utils.logger import get_logger
 from pyspark.sql.functions import col, concat_ws, lower, month, to_date, when, year
 
-load_dotenv()
-
 logger = get_logger(__name__)
 
-def gold_fact_sport(spark:SparkSession):
+def gold_fact_sport(config:AppConfig, spark:SparkSession):
     try:
         silver_df = spark.read\
                     .option("recursiveFileLookup", True)\
-                    .parquet(f"{os.getenv('SILVER_TRANSFORM_DIR')}")
+                    .parquet(f"{config.SILVER_TRANSFORM_DIR}")
 
         silver_df = silver_df.withColumn(
             "search_text",
@@ -114,7 +110,8 @@ def gold_fact_sport(spark:SparkSession):
 
         business_df = business_df.select(*columns)
 
-        business_df.write.parquet(f"{os.getenv('GOLD_FACT_SPORT_DIR')}/main", mode="ignore")
+        business_df.write.parquet(f"{config.GOLD_FACT_SPORT_DIR}/main", mode="ignore")
+        logger.info("Sports data is written")
 
     except Exception as e:
         spark.stop()

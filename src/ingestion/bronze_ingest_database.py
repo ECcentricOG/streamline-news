@@ -1,30 +1,26 @@
-import os
-
-from dotenv import load_dotenv
 from pyspark.sql import SparkSession
 from schema.news_dataset_schema import news_dataset_schema
+from utils.app_config import AppConfig
 from utils.logger import get_logger
-
-load_dotenv()
 
 logger = get_logger(__name__)
 
-def broze_ingest_database(spark:SparkSession, table_name:str):
+def broze_ingest_database(config:AppConfig, spark:SparkSession, table_name:str="news_dataset"):
     try:
         logger.info("Reading the data from database")
         news_dataset_df = spark.read.format("jdbc").options(
-            url=f"jdbc:postgresql://{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}",
+            url=f"jdbc:postgresql://{config.DB_HOST}:{config.DB_PORT}/{config.DB_NAME}",
             dbtable=table_name,
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
+            user=config.DB_USER,
+            password=config.DB_PASSWORD,
             driver="org.postgresql.Driver"
         ).schema(news_dataset_schema).load()
 
         logger.info("Successfully read the API data")
 
-        logger.info(f"Started to writing data to {os.getenv('BRONZE_DATASET_DIR')}")
-        news_dataset_df.write.parquet(path=str(os.getenv("BRONZE_DATASET_DIR")),mode="ignore")
-        logger.info(f"Sucessfully written data to {os.getenv('BRONZE_DATASET_DIR')}")
+        logger.info(f"Started to writing data to {config.BRONZE_DATASET_DIR}")
+        news_dataset_df.write.parquet(path=str(config.BRONZE_DATASET_DIR),mode="overwrite")
+        logger.info(f"Sucessfully written data to {config.BRONZE_DATASET_DIR}")
 
     except Exception as e:
         spark.stop()

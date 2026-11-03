@@ -1,21 +1,17 @@
-import os
-
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit, trim, col, when
-from dotenv import load_dotenv
+from utils.app_config import AppConfig
 from utils.logger import get_logger
 from schema.news_bronze_schema import news_bronze_schema
 from utils.unique_article_id import get_unique_id
 
-load_dotenv()
-
 logger = get_logger(__name__)
 
-def silver_transformation(spark:SparkSession):
+def silver_transformation(config:AppConfig, spark:SparkSession):
     try:
         news_df = spark.read.schema(news_bronze_schema)\
                     .option("recursiveFileLookup", "true")\
-                    .parquet(f"{os.getenv('SILVER_INGEST_DIR')}")
+                    .parquet(f"{config.SILVER_INGEST_DIR}")
 
         news_df = get_unique_id(news_df)
         news_df.withColumnRenamed("urlToImage", "image")
@@ -34,7 +30,7 @@ def silver_transformation(spark:SparkSession):
                     ).otherwise(cleaned)
                 )
 
-        news_df.write.parquet(f"{os.getenv('SILVER_TRANSFORM_DIR')}/main", mode="ignore")
+        news_df.write.parquet(f"{config.SILVER_TRANSFORM_DIR}/main", mode="ignore")
 
     except Exception as e: 
         logger.info(e)

@@ -1,18 +1,14 @@
-import os
 import requests
-from dotenv import load_dotenv
 
+from utils.app_config import AppConfig
 from utils.logger import get_logger
-
-load_dotenv()
-
-API_KEY = os.getenv("API_KEY")
-
-BASE_URL = "https://newsapi.org/v2/top-headlines"
 
 logger = get_logger(__name__)
 
-def get_news():
+def get_news(config:AppConfig):
+    API_KEY = str(config.API_KEY)
+    BASE_URL = str(config.BASE_URL)
+
     if not API_KEY:
         raise ValueError("API_KEY not found in .env file")
 

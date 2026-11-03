@@ -1,22 +1,20 @@
 import os
 
-from dotenv import load_dotenv
 from pyspark.sql.functions import lower, col, when, concat_ws, to_date, month, year
 from pyspark.sql import SparkSession
+from utils.app_config import AppConfig
 from utils.logger import get_logger
-
-load_dotenv()
 
 logger = get_logger(__name__)
 
-def gold_daily_fact_business(spark:SparkSession, download_date:str):
+def gold_daily_fact_business(config:AppConfig, spark:SparkSession, download_date:str):
     try:
-        if os.path.exists(f"{os.getenv('GOLD_FACT_BUSINESS_DIR')}/{download_date}"):
+        if os.path.exists(f"{config.GOLD_FACT_BUSINESS_DIR}/{download_date}"):
             logger.info(f"Data already exists for date {download_date}")
             return 
 
         silver_df = spark.read\
-                    .parquet(f"{os.getenv('SILVER_TRANSFORM_DIR')}/{download_date}")
+                    .parquet(f"{config.SILVER_TRANSFORM_DIR}/{download_date}")
 
         silver_df = silver_df.withColumn(
             "search_text",
@@ -125,7 +123,8 @@ def gold_daily_fact_business(spark:SparkSession, download_date:str):
 
         business_df = business_df.select(*columns)
 
-        business_df.write.parquet(f"{os.getenv('GOLD_FACT_BUSINESS_DIR')}/{download_date}", mode="ignore")
+        business_df.write.parquet(f"{config.GOLD_FACT_BUSINESS_DIR}/{download_date}", mode="ignore")
+        logger.info("Business daily data is written")
 
     except Exception as e:
         spark.stop()

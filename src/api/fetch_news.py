@@ -1,18 +1,14 @@
 import json
-import os
 
-from dotenv import load_dotenv
 from pathlib import Path
 from api.api_client import get_news
+from utils.app_config import AppConfig
 from utils.logger import get_logger
-
-load_dotenv()
-
-RAW_DATA_DIR = Path(str(os.getenv("RAW_API_DATA_DIR")))
 
 logger = get_logger(__name__)
 
-def fetch_todays_news(download_date:str):
+def fetch_todays_news(config: AppConfig,download_date:str):
+    RAW_DATA_DIR = Path(str(config.RAW_API_DATA_DIR))
     logger.info(f"Fetching Todays News download date : {download_date}")
 
     file_path = RAW_DATA_DIR / f"{download_date}.json"
@@ -21,7 +17,7 @@ def fetch_todays_news(download_date:str):
         return
     logger.info("Fetching news from api")
     
-    news_data = get_news()
+    news_data = get_news(config)
 
     output_data = {
         "download_date" : download_date,
