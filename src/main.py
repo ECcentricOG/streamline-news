@@ -1,68 +1,49 @@
 from utils.app_config import AppConfig
 from utils.spark_sesssion_factory import SparkSessionFactory
 from utils.logger import get_logger
-
 #Database
-from database.db_connection import get_connection
-from database.insert_into_table import insert
-
+from database.db_client import DatabaseClient
 #API
-from api.api_client import get_news
-from api.fetch_news import fetch_todays_news
-
+from api.api_client import APIClient
 #Ingestion
-from ingestion.bronze_ingest_database import broze_ingest_database
-from ingestion.bronze_ingest_api import bronze_ingest_api
-from ingestion.bronze_merge_data import merge_data
-from ingestion.bronze_daily_merge import bronze_daily_merge
-
+from pipeline.bronze_pipeline import BronzePipeline
 #Transformation
-from transformation.silver_ingestion import silver_ingest_data
-from transformation.silver_daily_ingest import silver_daily_ingest
-from transformation.silver_transformation import silver_transformation
-from transformation.silver_daily_transformation import silver_daily_transformation
-
+from pipeline.silver_pipeline import SilverPipeline
 #Aanlysis
-from analysis.gold_fact_bussiness_news import gold_fact_business
-from analysis.gold_daily_fact_business import gold_daily_fact_business
-from analysis.gold_fact_technology_news import gold_fact_technology
-from analysis.gold_daily_fact_technology import gold_daily_fact_technology
-from analysis.gold_fact_sport_news import gold_fact_sport
-from analysis.gold_daily_fact_sport import gold_daily_fact_sport
-from analysis.gold_fact_health_news import gold_fact_health
-from analysis.gold_dialy_fact_health import gold_daily_fact_health
+from pipeline.gold_pipeline import GoldPipeline
 
-download_date = "2026-11-03"
+download_date = "2026-11-05"
 config = AppConfig()
 spark = SparkSessionFactory.create("Streamline_News")
 logger = get_logger(__name__)
+api = APIClient(config, download_date)
+database = DatabaseClient(config)
+bronze = BronzePipeline(config, spark, download_date)
+silver = SilverPipeline(config, spark, download_date)
+gold = GoldPipeline(config, spark, download_date)
 
 #---------- Database ----------
-#get_connection(config)
-#insert(config)
-
+#database.get_connection()
+#database.insert()
 #---------- API ----------
-#get_news(config)
-#fetch_todays_news(config, download_date)
-
+api.get_news()
+api.fetch_todays_news()
 #---------- Ingestion ----------
-#broze_ingest_database(config, spark, "news_dataset")
-#bronze_ingest_api(config, spark, download_date)
-#merge_data(config, spark)
-#bronze_daily_merge(config, spark, download_date)
-
+#bronze.broze_ingest_database()
+bronze.bronze_ingest_api()
+#bronze.merge_data()
+bronze.bronze_daily_merge()
 #---------- Transformation -----------
-#silver_ingest_data(config, spark)
-#silver_daily_ingest(config, spark, download_date)
-#silver_transformation(config, spark)
-#silver_daily_transformation(config, spark, download_date)
-
+#silver.silver_ingest_data()
+silver.silver_daily_ingest()
+#silver.silver_transformation()
+silver.silver_daily_transformation()
 #---------- Aanlysis ----------
-#gold_fact_business(config, spark)
-gold_daily_fact_business(config, spark, download_date)
-#gold_fact_health(config, spark)
-gold_daily_fact_health(config, spark, download_date)
-#gold_fact_sport(config, spark)
-gold_daily_fact_sport(config, spark, download_date)
-#gold_fact_technology(config, spark)
-gold_daily_fact_technology(config, spark, download_date)
+#gold.gold_fact_business()
+gold.gold_daily_fact_business()
+#gold.gold_fact_technology()
+gold.gold_daily_fact_technology()
+#gold.gold_fact_sport()
+gold.gold_daily_fact_sport()
+#gold.gold_fact_health()
+gold.gold_daily_fact_health()
