@@ -40,10 +40,18 @@ class PipelineRunner:
         self.bronze.merge_data()
         self.bronze.bronze_daily_merge()
 
+    def run_daily_bronze(self):
+        self.bronze.bronze_ingest_api()
+        self.bronze.bronze_daily_merge()
+
     def run_silver(self):
         self.silver.silver_ingest_data()
         self.silver.silver_daily_ingest()
         self.silver.silver_transformation()
+        self.silver.silver_daily_transformation()
+
+    def run_daily_silver(self):
+        self.silver.silver_daily_ingest()
         self.silver.silver_daily_transformation()
 
     def run_gold(self):
@@ -54,6 +62,12 @@ class PipelineRunner:
         self.gold.gold_fact_sport()
         self.gold.gold_daily_fact_sport()
         self.gold.gold_fact_health()
+        self.gold.gold_daily_fact_health()
+
+    def run_daily_gold(self):
+        self.gold.gold_daily_fact_business()
+        self.gold.gold_daily_fact_technology()
+        self.gold.gold_daily_fact_sport()
         self.gold.gold_daily_fact_health()
 
     def run(self):

@@ -3,3 +3,4 @@ pathlib
 requests
 python-dotenv
 pyspark
+apache-airflow>=2.10.0
