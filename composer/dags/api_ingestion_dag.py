@@ -1,14 +1,22 @@
 import pendulum
 
+from datetime import timedelta
 from airflow.sdk import DAG, TriggerRule
 from airflow.providers.standard.operators.empty import EmptyOperator
 from airflow.providers.standard.operators.python import BranchPythonOperator, PythonOperator
 from composer.utils.check_file import check_raw_api_file
 from composer.utils.download_api_data import download_api_data
 
+default_args = {
+    "owner": "eccentric",
+    "retries": 3,
+    "retry_delay": timedelta(minutes=5),
+}
+
 with DAG(
     dag_id="api_ingestion",
     description="Daily news API ingestion",
+    default_args=default_args,
     start_date=pendulum.datetime(
         2026, 11, 1, tz="Asia/Kolkata"
     ),
