@@ -3,17 +3,8 @@ import pendulum
 from airflow.sdk import DAG, TriggerRule
 from airflow.providers.standard.operators.empty import EmptyOperator
 from airflow.providers.standard.operators.python import BranchPythonOperator, PythonOperator
-from src.api.api_client import APIClient
-from src.utils.app_config import AppConfig
-from utils.check_file import check_raw_api_file
-
-processing_date = "2026-11-05"
-config = AppConfig()
-api = APIClient(config, processing_date)
-
-def download_api_data():
-    api.get_news()
-    api.fetch_todays_news()
+from composer.utils.check_file import check_raw_api_file
+from composer.utils.download_api_data import download_api_data
 
 with DAG(
     dag_id="api_ingestion",
@@ -40,12 +31,12 @@ with DAG(
     )
 
     skip_download = EmptyOperator(
-        task_id="skipping api download"
+        task_id="skipping_api_download"
     )
 
     validate = PythonOperator(
         task_id="validate_raw_json",
-        python_callable=api.fetch_todays_news,
+        python_callable=download_api_data,
         trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS
     )
 

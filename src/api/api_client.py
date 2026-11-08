@@ -1,8 +1,8 @@
 import requests
 import json
 
-from utils.app_config import AppConfig
-from utils.logger import get_logger
+from src.utils.app_config import AppConfig
+from src.utils.logger import get_logger
 from pathlib import Path
 
 logger = get_logger(__name__)
