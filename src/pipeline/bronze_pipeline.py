@@ -1,12 +1,12 @@
 import os
 
 from pyspark.sql import SparkSession
-from utils.app_config import AppConfig
-from utils.logger import get_logger
+from src.utils.app_config import AppConfig
+from src.utils.logger import get_logger
 from pyspark.sql.functions import explode, lit
-from schema.news_api_schema import news_schema
-from schema.news_dataset_schema import news_dataset_schema
-from schema.news_article_schema import news_article_schema
+from src.schema.news_api_schema import news_schema
+from src.schema.news_dataset_schema import news_dataset_schema
+from src.schema.news_article_schema import news_article_schema
 
 logger = get_logger(__name__)
 
