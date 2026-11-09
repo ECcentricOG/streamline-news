@@ -1,9 +1,9 @@
 import os
 
 from pyspark.sql import SparkSession
-from utils.app_config import AppConfig
+from src.utils.app_config import AppConfig
 from pyspark.sql.functions import col, concat_ws, lower, month, to_date, when, year
-from utils.logger import get_logger
+from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

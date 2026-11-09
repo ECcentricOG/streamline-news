@@ -1,11 +1,11 @@
 import os
 
 from pyspark.sql import SparkSession
-from utils.app_config import AppConfig
-from utils.logger import get_logger
-from utils.unique_article_id import get_unique_id
+from src.utils.app_config import AppConfig
+from src.utils.logger import get_logger
+from src.utils.unique_article_id import get_unique_id
 from pyspark.sql.functions import lit, trim, col, when
-from schema.news_bronze_schema import news_bronze_schema
+from src.schema.news_bronze_schema import news_bronze_schema
 
 logger = get_logger(__name__)
 

@@ -1,8 +1,8 @@
-from api.api_client import APIClient
-from database.db_client import DatabaseClient
-from pipeline.bronze_pipeline import BronzePipeline
-from pipeline.gold_pipeline import GoldPipeline
-from pipeline.silver_pipeline import SilverPipeline
+from src.api.api_client import APIClient
+from src.database.db_client import DatabaseClient
+from src.pipeline.bronze_pipeline import BronzePipeline
+from src.pipeline.gold_pipeline import GoldPipeline
+from src.pipeline.silver_pipeline import SilverPipeline
 
 
 class PipelineRunner:

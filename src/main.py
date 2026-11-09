@@ -15,7 +15,6 @@ database = DatabaseClient(config)
 bronze = BronzePipeline(config, spark, download_date)
 silver = SilverPipeline(config, spark, download_date)
 gold = GoldPipeline(config, spark, download_date)
-
 pipeline = PipelineRunner(api, database, bronze, silver, gold)
 
-pipeline.run_daily()
+bronze.merge_data()
