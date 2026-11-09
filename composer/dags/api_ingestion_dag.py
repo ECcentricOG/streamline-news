@@ -1,7 +1,7 @@
 import pendulum
 
 from datetime import timedelta
-from airflow.sdk import DAG, TriggerRule
+from airflow.sdk import DAG
 from airflow.providers.standard.operators.empty import EmptyOperator
 from airflow.providers.standard.operators.python import BranchPythonOperator, PythonOperator
 from composer.utils.check_file import check_raw_api_file
@@ -44,8 +44,7 @@ with DAG(
 
     validate = PythonOperator(
         task_id="validate_raw_json",
-        python_callable=download_api_data,
-        trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS
+        python_callable=download_api_data
     )
 
     end = EmptyOperator(
