@@ -63,3 +63,55 @@ def check_silver_daily_transformation(**context):
     if os.path.exists(f"{config.SILVER_TRANSFORM_DIR}/{processing_date}"):
         return "end"
     return "silver_daily_transformation"
+
+def check_gold_fact_business(**context):
+    config = AppConfig()
+    if os.path.exists(f"{config.GOLD_FACT_BUSINESS_DIR}/main"):
+        return "check_gold_fact_technology"
+    return "gold_fact_business"
+
+def check_gold_fact_technology(**context):
+    config = AppConfig()
+    if os.path.exists(f"{config.GOLD_FACT_TECH_DIR}/main"):
+        return "check_gold_fact_sport"
+    return "gold_fact_sport"
+
+def check_gold_fact_sport(**context):
+    config = AppConfig()
+    if os.path.exists(f"{config.GOLD_FACT_SPORT_DIR}/main"):
+        return "check_gold_fact_health"
+    return "gold_fact_sport"
+
+def check_gold_fact_health(**context):
+    config = AppConfig()
+    if os.path.exists(f"{config.GOLD_FACT_HEALTH_DIR}/main"):
+        return "end"
+    return "gold_fact_health"
+
+def check_gold_daily_business(**context):
+    config = AppConfig()
+    processing_date = get_processing_date(**context)
+    if os.path.exists(f"{config.GOLD_FACT_BUSINESS_DIR}/{processing_date}"):
+        return "check_gold_daily_technology"
+    return "gold_daily_business"
+
+def check_gold_daily_technology(**context):
+    config = AppConfig()
+    processing_date = get_processing_date(**context)
+    if os.path.exists(f"{config.GOLD_FACT_TECH_DIR}/{processing_date}"):
+        return "check_gold_daily_sport"
+    return "gold_daily_technology"
+
+def check_gold_daily_sport(**context):
+    config = AppConfig()
+    processing_date = get_processing_date(**context)
+    if os.path.exists(f"{config.GOLD_FACT_SPORT_DIR}/{processing_date}"):
+        return "check_gold_daily_health"
+    return "gold_daily_sport"
+
+def check_gold_daily_health(**context):
+    config = AppConfig()
+    processing_date = get_processing_date(**context)
+    if os.path.exists(f"{config.GOLD_FACT_HEALTH_DIR}/{processing_date}"):
+        return "end"
+    return "gold_daily_health"

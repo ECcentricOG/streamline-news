@@ -38,7 +38,7 @@ with DAG(
 
     silver_daily = TriggerDagRunOperator(
         task_id="trigger_silver_daily",
-        trigger_dag_id="bronze_daily_transformation",
+        trigger_dag_id="silver_daily_transformation",
         wait_for_completion=True,
         allowed_states=["success"],
         failed_states=["failed"]
