@@ -44,10 +44,18 @@ with DAG(
         failed_states=["failed"]
     )
 
+    gold_init = TriggerDagRunOperator(
+        task_id="trigger_gold_initialization",
+        trigger_dag_id="gold_init",
+        wait_for_completion=True,
+        allowed_states=["success"],
+        failed_states=["failed"]
+    )
+
     end = EmptyOperator(
         task_id="end"
     )
 
-    start >> db_init >> bronze_init >> silver_init >> end
+    start >> db_init >> bronze_init >> silver_init >> gold_init >> end
 
 

@@ -44,8 +44,16 @@ with DAG(
         failed_states=["failed"]
     )
 
+    gold_daily = TriggerDagRunOperator(
+        task_id="trigger_gold_daily",
+        trigger_dag_id="gold_daily",
+        wait_for_completion=True,
+        allowed_states=["success"],
+        failed_states=["failed"]
+    )
+
     end = EmptyOperator(
         task_id="end"
     )
 
-    start >> api_download >> bronze_daily >> silver_daily >> end
+    start >> api_download >> bronze_daily >> silver_daily >> gold_daily >> end
