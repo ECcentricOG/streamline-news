@@ -39,7 +39,7 @@ with DAG(
     )
 
     skip_download = EmptyOperator(
-        task_id="skipping_api_download"
+        task_id="skip_api_download"
     )
 
     validate = PythonOperator(
