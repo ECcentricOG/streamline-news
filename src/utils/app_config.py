@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class AppConfig:
+
+    SPARK_EXECUTION_MODE = os.getenv("SPARK_EXECUTION_MODE", "local").lower()
+
     DB_HOST = os.getenv('DB_HOST')
     DB_PORT = os.getenv('DB_PORT')
     DB_USER = os.getenv('DB_USER')
@@ -24,3 +27,14 @@ class AppConfig:
     GOLD_FACT_TECH_DIR = os.getenv('GOLD_FACT_TECH_DIR')
     GOLD_FACT_SPORT_DIR = os.getenv('GOLD_FACT_SPORT_DIR')
     GOLD_FACT_HEALTH_DIR = os.getenv('GOLD_FACT_HEALTH_DIR')
+
+    @classmethod
+    def validate_execution_mode(cls):
+        supported_modes = {"local", "dataproc"}
+
+        if cls.SPARK_EXECUTION_MODE not in supported_modes:
+            raise ValueError(
+                f"Invalid SPARK_EXECUTION_MODE: "
+                f"{cls.SPARK_EXECUTION_MODE}. "
+                f"Choose from {supported_modes}."
+            )
