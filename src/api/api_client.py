@@ -5,12 +5,15 @@ from src.utils.app_config import AppConfig
 from src.utils.logger import get_logger
 from pathlib import Path
 
+from src.utils.storage_client import StorageClient
+
 logger = get_logger(__name__)
 
 class APIClient:
     def __init__(self, config:AppConfig, date:str) -> None:
         self.config = config
         self.date = date
+        self.storage = StorageClient()
 
     def get_news(self):
         API_KEY = str(self.config.API_KEY)
@@ -27,13 +30,9 @@ class APIClient:
             }
     
         resp = requests.get(url=BASE_URL, params=params, timeout=30)
-        if resp.status_code != 200:
-            logger.info("News API Response :")
-            logger.info(resp.text)
-            resp.raise_for_status()
-    
+        resp.raise_for_status()
         data = resp.json()
-    
+
         if data.get("status") != "ok":
             raise RuntimeError(f"NewsAPI error: {data.get('message', 'Unknown error')}")
     
@@ -43,11 +42,10 @@ class APIClient:
 
 
     def fetch_todays_news(self):
-        RAW_DATA_DIR = Path(str(self.config.RAW_API_DATA_DIR))
         logger.info(f"Fetching Todays News download date : {self.date}")
     
-        file_path = RAW_DATA_DIR / f"{self.date}.json"
-        if file_path.exists():
+        file_path = self.storage.join_path(f"{self.config.RAW_API_DATA_DIR}", f"{self.date}.json")
+        if self.storage.exists(file_path):
             logger.info("Today's file already exists so skipping download")
             return
         logger.info("Fetching news from api")
@@ -59,9 +57,16 @@ class APIClient:
             "source" : "API",
             "data" : news_data
         }
-    
-        with open(file_path, "w", encoding="utf8") as file:
-            json.dump(output_data, file, indent=4, ensure_ascii=False)
+        
+        self.storage.upload_text(
+            content=json.dumps(
+                output_data,
+                indent=4,
+                ensure_ascii=False
+            ),
+            destination_path=file_path,
+            content_type="application/json"
+        )
     
         articles = news_data.get("articles", [])
         logger.info(f"Articles fetched : {len(articles)}")
