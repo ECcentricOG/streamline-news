@@ -11,6 +11,8 @@ else:
 
 class AppConfig:
 
+    APP_ENV = APP_ENV
+
     SPARK_EXECUTION_MODE = os.getenv("SPARK_EXECUTION_MODE", "local").lower()
 
     DB_HOST = os.getenv('DB_HOST')

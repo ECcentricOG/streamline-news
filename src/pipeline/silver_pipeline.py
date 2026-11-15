@@ -1,7 +1,6 @@
-import os
-
 from pyspark.sql import SparkSession
 from src.utils.app_config import AppConfig
+from src.utils.spark_storage_client import SparkStorageClient
 from src.utils.logger import get_logger
 from src.utils.unique_article_id import get_unique_id
 from pyspark.sql.functions import lit, trim, col, when
@@ -15,6 +14,7 @@ class SilverPipeline:
         self.config = config
         self.spark = spark
         self.date = date
+        self.storage = SparkStorageClient(spark)
 
 
     def silver_ingest_data(self):
@@ -39,7 +39,9 @@ class SilverPipeline:
                 .schema(news_bronze_schema)\
                 .parquet(f"{self.config.BRONZE_MERGE_DIR}/{self.date}")
     
-            if os.path.exists(f"{self.config.SILVER_INGEST_DIR}/{self.date}"):
+            silver_path = f"{self.config.SILVER_INGEST_DIR}/{self.date}"
+
+            if self.storage.exists(silver_path):
                 logger.info("Data is already there so skipping")
                 return 
     
@@ -90,7 +92,9 @@ class SilverPipeline:
             news_df = self.spark.read.schema(news_bronze_schema)\
                         .parquet(f"{self.config.SILVER_INGEST_DIR}/{self.date}")
     
-            if os.path.exists(f"{self.config.SILVER_TRANSFORM_DIR}/{self.date}"):
+            silver_path = f"{self.config.SILVER_TRANSFORM_DIR}/{self.date}"
+
+            if self.storage.exists(silver_path):
                 return
     
             news_df = get_unique_id(news_df)

@@ -1,7 +1,6 @@
-import os
-
 from pyspark.sql import SparkSession
 from src.utils.app_config import AppConfig
+from src.utils.spark_storage_client import SparkStorageClient
 from src.utils.logger import get_logger
 from pyspark.sql.functions import explode, lit
 from src.schema.news_api_schema import news_schema
@@ -16,6 +15,7 @@ class BronzePipeline:
         self.spark = spark
         self.date = date
         self.table_name = table_name
+        self.storage = SparkStorageClient(spark)
 
     def broze_ingest_database(self):
         try:
@@ -46,7 +46,7 @@ class BronzePipeline:
             raw_file = f"{self.config.RAW_API_DATA_DIR}/{self.date}.json"
             bronze_path = f"{self.config.BRONZE_API_DIR}/{self.date}"
     
-            if os.path.exists(bronze_path):
+            if self.storage.exists(bronze_path):
                 logger.info(f"Data for {self.date} already exists. Skipping.")
                 return 
     
@@ -151,7 +151,9 @@ class BronzePipeline:
     
             logger.info("Sucessfully readed the daily API data")
     
-            if os.path.exists(f"{self.config.BRONZE_MERGE_DIR}/{self.date}"):
+            merge_path = f"{self.config.BRONZE_MERGE_DIR}/{self.date}"
+
+            if self.storage.exists(merge_path):
                 logger.info("Data is already present in the Merge table")
                 return 
     

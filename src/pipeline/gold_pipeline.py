@@ -2,6 +2,7 @@ import os
 
 from pyspark.sql import SparkSession
 from src.utils.app_config import AppConfig
+from src.utils.spark_storage_client import SparkStorageClient
 from pyspark.sql.functions import col, concat_ws, lower, month, to_date, when, year
 from src.utils.logger import get_logger
 
@@ -13,6 +14,7 @@ class GoldPipeline:
         self.config = config
         self.spark = spark
         self.date = date
+        self.storage = SparkStorageClient(spark)
 
 
     def gold_fact_business(self):
@@ -139,7 +141,8 @@ class GoldPipeline:
 
     def gold_daily_fact_business(self):
         try:
-            if os.path.exists(f"{self.config.GOLD_FACT_BUSINESS_DIR}/{self.date}"):
+            gold_path = f"{self.config.GOLD_FACT_BUSINESS_DIR}/{self.date}"
+            if self.storage.exists(gold_path):
                 logger.info(f"Data already exists for date {self.date}")
                 return 
     
@@ -391,7 +394,8 @@ class GoldPipeline:
 
     def gold_daily_fact_technology(self):
         try:
-            if os.path.exists(f"{self.config.GOLD_FACT_TECH_DIR}/{self.date}"):
+            gold_path = f"{self.config.GOLD_FACT_TECH_DIR}/{self.date}"
+            if self.storage.exists(gold_path):
                 logger.info("Data is already there so skipping")
                 return 
     
@@ -634,7 +638,8 @@ class GoldPipeline:
 
     def gold_daily_fact_sport(self):
         try:
-            if os.path.exists(f"{self.config.GOLD_FACT_SPORT_DIR}/{self.date}"):
+            gold_path = f"{self.config.GOLD_FACT_SPORT_DIR}/{self.date}"
+            if self.storage.exists(gold_path):
                 logger.info("Data is alredy there skipping")
                 return 
     
@@ -888,7 +893,8 @@ class GoldPipeline:
 
     def gold_daily_fact_health(self):
         try:
-            if os.path.exists(f"{self.config.GOLD_FACT_HEALTH_DIR}/{self.date}"):
+            gold_path = f"{self.config.GOLD_FACT_HEALTH_DIR}/{self.date}"
+            if self.storage.exists(gold_path):
                 logger.info("Data is already there so skipping")
                 return 
     
