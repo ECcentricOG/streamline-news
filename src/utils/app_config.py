@@ -1,7 +1,13 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+APP_ENV = os.getenv("APP_ENV", "local").lower()
+if APP_ENV == "local":
+    load_dotenv(".env", override=False)
+elif APP_ENV == "gcp":
+    load_dotenv(".env.gcp", override=False)
+else:
+    raise ValueError(f"Unsupported APP_ENV: {APP_ENV}")
 
 class AppConfig:
 
